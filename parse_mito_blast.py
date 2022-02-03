@@ -7,7 +7,7 @@ import pandas as pd
 
 ## Open tabular format output from blast of scaffolds against NCBI mitochondrial db
 tabfile = []
-with open("mito_blast_bMelUnd1_test5_nocov.tsv",'r') as file:
+with open("scaff_760_100lines_mito_blast_bMelUnd1.tsv",'r') as file:
     file = csv.reader(file, delimiter = '\t')
     for line in file: 
         tabfile.append(line)
@@ -22,51 +22,67 @@ for uniqScaff in uniqScaffs:
 
     rows = dffile.loc[dffile['qseqid'] == uniqScaff] ## isolate rows with a particular scaffold name 
 
-    ## making a list of all the alignment start and end positions 
-    starts = list(rows['qstart']) 
-    ends = list(rows['qend'])
-    totalScaffLength = (list(rows['qlen']))[0]
+    uniqAccs = rows.sseqid.unique()
 
-    # Some alignments start at the same position in the scaffold and overlap - this code block below just identifies the longest fragment starting from 
-    # each unique start position and adds it to the dictionary. 
-    # So each start position has one end position and thats whatever end position makes it the longest alignment from the start. 
-    # MIGHT WANT TO TEST THIS OUT 
-    startEnds = {}
-    for i in range(len(starts)):
-        if starts[i] not in startEnds.keys():
-            startEnds[starts[i]] = ends[i]
-        elif int(startEnds[starts[i]]) < int(ends[i]):
-            startEnds[starts[i]] = int(ends[i])
+    for uniqAcc in uniqAccs:
 
-    startEndsDf = pd.DataFrame()
-    startEndsDf['starts'] = [int(key) for key in startEnds.keys()]
-    startEndsDf['ends'] = [int(value) for value in startEnds.values()]
+        print ("\n" + uniqAcc)
 
-    startEndsDfSort = startEndsDf.sort_values('starts')
+        rowsAcc = rows.loc[rows['sseqid'] == uniqAcc]
 
-    startsSort = list(startEndsDfSort['starts'])
-    endsSort = list(startEndsDfSort['ends'])
+        ## making a list of all the alignment start and end positions 
+        starts = list(rowsAcc['qstart'].astype('int')) 
+        ends = list(rowsAcc['qend'].astype('int'))
+        totalScaffLength = (list(rowsAcc['qlen']))[0]
 
-    coverage = 0 
-    totalPositionsOverlaps = 0
-    gapsBetweenAlignments = 0 
-    for i in range(len(startsSort) - 1):
-        alignLength = endsSort[i] - startsSort[i]
-        overlapGapLength = startsSort[i+1] - endsSort[i]
-        coverage += alignLength
-        # print (overlapGapLength)
-        if overlapGapLength < 0:
-            totalPositionsOverlaps += overlapGapLength
-            coverage = coverage - overlapGapLength ## If an overlap is caluclated, then the length of the overlap is removed from the total coverage because that would be 
-            ## positions that were covered by two different alignments. 
-        elif overlapGapLength > 0:
-            gapsBetweenAlignments += overlapGapLength
+        startsEndsDf = pd.DataFrame(list(zip(starts,ends)),
+                                    columns =['starts','ends'])
 
-    print ("\n%s scaffold coverage report." % uniqScaff)
-    print ("Total length of scaffold: %s" % totalScaffLength)
-    print ("Total alignment coverage: %i" % coverage)
-    percentCov = (coverage/int(totalScaffLength)*100)
-    print ("Percent of scaffold covered by alignment: %f" % percentCov + "%")
+        startsEndsDfSort = startsEndsDf.sort_values('starts')
+        print (startsEndsDfSort)
+
+        # # Some alignments start at the same position in the scaffold and overlap - this code block below just identifies the longest fragment starting from 
+        # # each unique start position and adds it to the dictionary. 
+        # # So each start position has one end position and thats whatever end position makes it the longest alignment from the start. 
+        # # MIGHT WANT TO TEST THIS OUT 
+        # startEnds = {}
+        # for i in range(len(starts)):
+        #     if starts[i] not in startEnds.keys():
+        #         startEnds[starts[i]] = ends[i]
+        #     elif int(startEnds[starts[i]]) < int(ends[i]):
+        #         startEnds[starts[i]] = int(ends[i])
+
+        # startEndsDf = pd.DataFrame()
+        # startEndsDf['starts'] = [int(key) for key in startEnds.keys()]
+        # startEndsDf['ends'] = [int(value) for value in startEnds.values()]
+
+        # startEndsDfSort = startEndsDf.sort_values('starts')
+
+        # startsSort = list(startEndsDfSort['starts'])
+        # endsSort = list(startEndsDfSort['ends'])
+
+        # # coverage = 0 
+        # # totalPositionsOverlaps = 0
+        # # gapsBetweenAlignments = 0 
+        # # for i in range(len(startsSort) - 1):
+        # #     alignLength = endsSort[i] - startsSort[i]
+        # #     overlapGapLength = startsSort[i+1] - endsSort[i]
+        # #     coverage += alignLength
+        # #     # print (overlapGapLength)
+        # #     if overlapGapLength < 0:
+        # #         totalPositionsOverlaps += overlapGapLength
+        # #         coverage = coverage - overlapGapLength ## If an overlap is caluclated, then the length of the overlap is removed from the total coverage because that would be 
+        # #         ## positions that were covered by two different alignments. 
+        # #     elif overlapGapLength > 0:
+        # #         gapsBetweenAlignments += overlapGapLength
+
+        # # percentCov = (coverage/int(totalScaffLength)*100)
+
+        # # if percentCov > 70:
+        # #     print ("\n%s scaffold coverage report for " % uniqScaff + " and accession number %s." % uniqAcc)
+        # #     print ("Total length of scaffold: %s" % totalScaffLength)
+        # #     print ("Total alignment coverage: %i" % coverage)
+        # #     print ("Percent of scaffold covered by alignment: %f" % percentCov + "%" + "\n")
 
     
 
