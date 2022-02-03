@@ -24,6 +24,8 @@ for uniqScaff in uniqScaffs:
 
     uniqAccs = rows.sseqid.unique()
 
+    totalScaffLength = (list(rows['qlen']))[0]
+
     for uniqAcc in uniqAccs:
 
         print ("\n" + uniqAcc)
@@ -33,13 +35,56 @@ for uniqScaff in uniqScaffs:
         ## making a list of all the alignment start and end positions 
         starts = list(rowsAcc['qstart'].astype('int')) 
         ends = list(rowsAcc['qend'].astype('int'))
-        totalScaffLength = (list(rowsAcc['qlen']))[0]
 
         startsEndsDf = pd.DataFrame(list(zip(starts,ends)),
                                     columns =['starts','ends'])
 
         startsEndsDfSort = startsEndsDf.sort_values('starts')
+        # print (startsEndsDfSort)
+
+        startsSort = list(startsEndsDfSort['starts'])
+        endsSort = list(startsEndsDfSort['ends'])
+
         print (startsEndsDfSort)
+        print ("total scaffold length %s" % totalScaffLength)
+
+        # coverage = 0 
+        # totalPositionsOverlaps = 0
+        # gapsBetweenAlignments = 0 
+        # for i in range(len(startsSort) - 1):
+        #     alignLength = endsSort[i] - startsSort[i]
+        #     overlapGapLength = startsSort[i+1] - endsSort[i]
+        #     coverage += alignLength
+        #     currentGreatestPos = 0 
+        #     # print (overlapGapLength)
+        #     if overlapGapLength < 0:
+        #         totalPositionsOverlaps += overlapGapLength
+        #         coverage = coverage + overlapGapLength ## If an overlap is caluclated, then the length of the overlap is removed from the total coverage because that would be 
+        #         ## positions that were covered by two different alignments. 
+        #     elif overlapGapLength > 0:
+        #         gapsBetweenAlignments += overlapGapLength
+
+        coverage = 0
+        currentpos = 0
+        for i in range(len(startsSort) -1):
+            alignLength = endsSort[i] - startsSort[i]
+            if startsSort[i] > currentpos:
+                coverage += alignLength
+                currentpos = endsSort[i]
+            elif (startsSort[i] < currentpos) and (endsSort[i] > currentpos):
+                coverage += (endsSort[i] - currentpos)
+                print ("overlap")
+                currentpos = endsSort[i]
+            print ("The current end position is %i" % currentpos)
+
+
+            
+        
+        print ("total coverage %i" % coverage)
+        # print ((coverage/int(totalScaffLength))*100)
+
+
+        ## OLD CODE CUTOFF ----------------------------
 
         # # Some alignments start at the same position in the scaffold and overlap - this code block below just identifies the longest fragment starting from 
         # # each unique start position and adds it to the dictionary. 
