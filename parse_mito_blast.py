@@ -7,7 +7,7 @@ import pandas as pd
 
 ## Open tabular format output from blast of scaffolds against NCBI mitochondrial db
 tabfile = []
-with open("scaff_760_100lines_mito_blast_bMelUnd1.tsv",'r') as file:
+with open("scaff_741_300lines_bMelUnd1_mat.tsv",'r') as file:
     file = csv.reader(file, delimiter = '\t')
     for line in file: 
         tabfile.append(line)
@@ -28,7 +28,7 @@ for uniqScaff in uniqScaffs:
 
     for uniqAcc in uniqAccs:
 
-        print ("\n" + uniqAcc)
+        # print ("\n" + uniqAcc)
 
         rowsAcc = rows.loc[rows['sseqid'] == uniqAcc]
 
@@ -44,9 +44,6 @@ for uniqScaff in uniqScaffs:
 
         startsSort = list(startsEndsDfSort['starts'])
         endsSort = list(startsEndsDfSort['ends'])
-
-        print (startsEndsDfSort)
-        print ("total scaffold length %s" % totalScaffLength)
 
         # coverage = 0 
         # totalPositionsOverlaps = 0
@@ -64,9 +61,10 @@ for uniqScaff in uniqScaffs:
         #     elif overlapGapLength > 0:
         #         gapsBetweenAlignments += overlapGapLength
 
+        print ("\n" + "Accession number: %s " % uniqAcc + "Scaffold: %s " % uniqScaff)
         coverage = 0
         currentpos = 0
-        for i in range(len(startsSort) -1):
+        for i in range(len(startsSort)):
             alignLength = endsSort[i] - startsSort[i]
             if startsSort[i] > currentpos:
                 coverage += alignLength
@@ -76,12 +74,15 @@ for uniqScaff in uniqScaffs:
                 print ("overlap")
                 currentpos = endsSort[i]
             print ("The current end position is %i" % currentpos)
-
-
-            
         
-        print ("total coverage %i" % coverage)
-        # print ((coverage/int(totalScaffLength))*100)
+        
+        percentCov = (coverage/int(totalScaffLength))*100
+        if percentCov > 90: 
+            # print ("\n" + "Accession number: %s " % uniqAcc + "Scaffold: %s " % uniqScaff)
+            print (startsEndsDfSort)
+            print ("total scaffold length %s" % totalScaffLength)
+            print ("total coverage %i" % coverage)
+            print ("percent coverage: %.2f" % percentCov)
 
 
         ## OLD CODE CUTOFF ----------------------------
