@@ -11,4 +11,6 @@ cov=$3
 blastn -query $inputfilename -db mito_blast_db -num_threads 32 \
 -outfmt "6 qseqid sseqid qlen length qcovhsp evalue qstart qend qcovs" -out $outfilename
 
+python3 parse_mito_blast.py $newdir/mito_blast_$scaffs > $scaffList
+
 
