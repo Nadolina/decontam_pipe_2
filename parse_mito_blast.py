@@ -66,6 +66,8 @@ for uniqScaff in uniqScaffs:
             highCovReport = [uniqScaff,uniqAcc,totalScaffLength,coverage,percentCov]
             highCovReportLines.append(highCovReport)
             highCovScaffs.add(uniqScaff)
+        # else:
+        #     print ("No scaffolds were identified as mitochondrial contaminants")
 
         
 highCovReports = (pd.DataFrame(highCovReportLines, columns=['Accession_num', 'Scaffold','Scaffold_len','Scaffold_align_cov','Perc_align_cov'])).sort_values('Perc_align_cov', ascending = False)
