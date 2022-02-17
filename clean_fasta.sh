@@ -4,6 +4,8 @@
 
 scaffs=$1
 outfile=$2
+contam_scaffs=$3
 
-gfastats $scaffs -o $outfile --remove-terminal-gaps 
+echo "gfastats $scaffs --exclude-bed $contam_scaffs -o $outfile --remove-terminal-gaps"
+gfastats $scaffs --exclude-bed $contam_scaffs -o $outfile --remove-terminal-gaps 
 

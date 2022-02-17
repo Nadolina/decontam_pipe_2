@@ -5,12 +5,19 @@
 ##get a look at the whole output. 
 
 inputfilename=$1
-outfilename=$2
-cov=$3
+outfilename=$2.tsv
+outreportname=$3
+scaffList=$4
 
 blastn -query $inputfilename -db mito_blast_db -num_threads 32 \
 -outfmt "6 qseqid sseqid qlen length qcovhsp evalue qstart qend qcovs" -out $outfilename
 
-python3 parse_mito_blast.py $newdir/mito_blast_$scaffs > $scaffList
+echo "python3 parse_mito_blast.py $outfilename $outreportname | tr A-Z a-z | tee -a $scaffList"
+python3 parse_mito_blast.py $outfilename $outreportname | tr A-Z a-z | tee -a $scaffList
+
+# echo "grep -i 'scaffold' $outreportname | tr A-Z a-z | awk '{print \$2}' | awk 'NR!=1 {print}'| tee -a $scaffList"
+# grep -i 'scaffold' $outreportname | tr A-Z a-z | awk '{print $2}' | awk 'NR!=1 {print}'| tee -a $scaffList
+
+
 
 
