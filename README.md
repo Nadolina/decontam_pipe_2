@@ -12,6 +12,7 @@ The pipe is written in shell and python scripts.
 - NCBI mitochondria database (https://ftp.ncbi.nlm.nih.gov/refseq/release/mitochondrion/mitochondrion.2.1.genomic.fna.gz)
 
 **Inputs and running the pipeline**
+
 All scripts/programs are submitted via the shell pipeline. Note that the pipe was developed for internak VGL/VGP use and so is based on submission to a slurm queueing system. The pipe can be run from the commandline:
 
 sbatch -p <parition> VGP_decontamination_pipe.sh <fasta> <unique ID>
