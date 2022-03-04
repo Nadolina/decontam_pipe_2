@@ -19,7 +19,9 @@ sbatch -p <parition> VGP_decontamination_pipe.sh <fasta> <unique ID>
 Fasta files must be decompressed. The unique ID can be anything, it is just used for naming throughout the pipe; for VGP purposes, we use the TOLID (i.e./ bTaeGut2).
 
 **Outputs**
-1. class-/ unclass_bTaeGut2_<fastaname>.fasta - two separate files containing the classified (contaminant) and unclassified (target) scaffolds; a future update will include the removal of the unclassified file since a final fasta is generated at the end of the pipe.
+1. class-/ unclass_bTaeGut2_<fastaname> - two separate files containing the classified (contaminant) and unclassified (target) scaffolds; a future update will include the removal of the unclassified file since a final fasta is generated at the end of the pipe.
 2. contam_scaffs_<unique ID>.txt - compiled list of contaminant scaffolds from the kraken2 and mito-blast subprocesses 
 3. mito_blast_<fastaname>.report - from the parse_mito_blast.py script which summarizes the blast output table, listing the highest coverage scaffold-accession number pairs (high coverage = mito-contaminant)
-4 
+4. N_sub_masked_<fastaname> - fasta with hard masking after dustmasker + sub_soft_hard_mask.py 
+5. trimmed_<fastaname> - THE FINAL OUTPUT; a scaffolded assembly from which terminal gaps and all contaminant (non-target and mito) have been removed 
+
